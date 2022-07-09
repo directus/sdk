@@ -62,7 +62,7 @@ describe('auth', function () {
 		const sdk = new Directus(url);
 		await sdk.auth.static('token');
 
-		expect(sdk.auth.token);
+		expect(await sdk.auth.token);
 	});
 
 	test(`invalid credentials token should not set the token`, async (url, nock) => {
@@ -90,7 +90,7 @@ describe('auth', function () {
 			//
 		}
 
-		expect(sdk.auth.token).toBeNull();
+		expect(await sdk.auth.token).toBeNull();
 	});
 
 	test(`invalid static token should not set the token`, async (url, nock) => {
@@ -118,6 +118,6 @@ describe('auth', function () {
 			//
 		}
 
-		expect(sdk.auth.token).toBeNull();
+		expect(await sdk.auth.token).toBeNull();
 	});
 });
