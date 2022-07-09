@@ -1,5 +1,6 @@
 # Directus JS SDK
 
+
 ## Installation
 
 ```
