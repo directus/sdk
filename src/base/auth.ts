@@ -32,7 +32,11 @@ export class Auth extends IAuth {
 
 		if (options?.staticToken) {
 			this.staticToken = options?.staticToken;
-			this.updateStorage<'StaticToken'>({ access_token: this.staticToken, expires: null, refresh_token: null });
+			this.updateStorage<'StaticToken'>({
+				access_token: this.staticToken,
+				expires: null,
+				refresh_token: null,
+			});
 		}
 	}
 
@@ -104,7 +108,9 @@ export class Auth extends IAuth {
 
 		return {
 			access_token: response.data!.access_token,
-			...(response.data?.refresh_token && { refresh_token: response.data.refresh_token }),
+			...(response.data?.refresh_token && {
+				refresh_token: response.data.refresh_token,
+			}),
 			expires: response.data!.expires,
 		};
 	}
@@ -122,7 +128,9 @@ export class Auth extends IAuth {
 
 		return {
 			access_token: response.data!.access_token,
-			...(response.data?.refresh_token && { refresh_token: response.data.refresh_token }),
+			...(response.data?.refresh_token && {
+				refresh_token: response.data.refresh_token,
+			}),
 			expires: response.data!.expires,
 		};
 	}
@@ -130,9 +138,16 @@ export class Auth extends IAuth {
 	async static(token: AuthToken): Promise<boolean> {
 		if (!this.staticToken) this.staticToken = token;
 
-		await this._transport.get('/users/me', { params: { access_token: token }, headers: { Authorization: null } });
+		await this._transport.get('/users/me', {
+			params: { access_token: token },
+			headers: { Authorization: null },
+		});
 
-		this.updateStorage<'StaticToken'>({ access_token: token, expires: null, refresh_token: null });
+		this.updateStorage<'StaticToken'>({
+			access_token: token,
+			expires: null,
+			refresh_token: null,
+		});
 
 		return true;
 	}
@@ -145,6 +160,10 @@ export class Auth extends IAuth {
 
 		await this._transport.post('/auth/logout', { refresh_token });
 
-		this.updateStorage<null>({ access_token: null, expires: null, refresh_token: null });
+		this.updateStorage<null>({
+			access_token: null,
+			expires: null,
+			refresh_token: null,
+		});
 	}
 }

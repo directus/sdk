@@ -1,5 +1,5 @@
-import { TransportRequestOptions } from "./transport";
-import { ID } from "./types";
+import { TransportRequestOptions } from './transport';
+import { ID } from './types';
 
 export type Field = string;
 
@@ -24,15 +24,15 @@ export type ItemMetadata = {
 export type Payload = Record<string, any>;
 
 export enum Meta {
-	TOTAL_COUNT = "total_count",
-	FILTER_COUNT = "filter_count",
+	TOTAL_COUNT = 'total_count',
+	FILTER_COUNT = 'filter_count',
 }
 
 export type QueryOne<T> = {
-	fields?: keyof T | (keyof T)[] | "*" | "*.*" | "*.*.*" | string | string[];
+	fields?: keyof T | (keyof T)[] | '*' | '*.*' | '*.*.*' | string | string[];
 	search?: string;
 	deep?: Deep<T>;
-	export?: "json" | "csv" | "xml";
+	export?: 'json' | 'csv' | 'xml';
 	filter?: Filter<T>;
 };
 
@@ -41,7 +41,7 @@ export type QueryMany<T> = QueryOne<T> & {
 	limit?: number;
 	offset?: number;
 	page?: number;
-	meta?: keyof ItemMetadata | "*";
+	meta?: keyof ItemMetadata | '*';
 	groupBy?: string | string[];
 	aggregate?: Aggregate;
 	alias?: Record<string, string>;
@@ -52,9 +52,7 @@ export type Deep<T> = {
 };
 
 export type DeepQueryMany<T> = {
-	[K in keyof QueryMany<SingleItem<T>> as `_${string & K}`]: QueryMany<
-		SingleItem<T>
-	>[K];
+	[K in keyof QueryMany<SingleItem<T>> as `_${string & K}`]: QueryMany<SingleItem<T>>[K];
 };
 
 export type SharedAggregate = {
@@ -72,10 +70,7 @@ export type Aggregate = {
 	[K in keyof SharedAggregate]: string;
 };
 
-export type Sort<T> = (
-	| `${Extract<keyof SingleItem<T>, string>}`
-	| `-${Extract<keyof SingleItem<T>, string>}`
-)[];
+export type Sort<T> = (`${Extract<keyof SingleItem<T>, string>}` | `-${Extract<keyof SingleItem<T>, string>}`)[];
 
 export type FilterOperators<T> = {
 	_eq?: T;
@@ -109,9 +104,7 @@ export type LogicalFilterOr<T> = { _or: Filter<T>[] };
 export type LogicalFilter<T> = LogicalFilterAnd<T> | LogicalFilterOr<T>;
 
 export type FieldFilter<T> = {
-	[K in keyof SingleItem<T>]?:
-		| FilterOperators<SingleItem<T>[K]>
-		| FieldFilter<SingleItem<T>[K]>;
+	[K in keyof SingleItem<T>]?: FilterOperators<SingleItem<T>[K]> | FieldFilter<SingleItem<T>[K]>;
 };
 
 export type Filter<T> = LogicalFilter<T> | FieldFilter<T>;
@@ -127,44 +120,15 @@ type Single<T> = T extends Array<unknown> ? T[number] : T;
  * CRUD at its finest
  */
 export interface IItems<T extends Item> {
-	createOne(
-		item: PartialItem<T>,
-		query?: QueryOne<T>,
-		options?: ItemsOptions
-	): Promise<OneItem<T>>;
-	createMany(
-		items: PartialItem<T>[],
-		query?: QueryMany<T>,
-		options?: ItemsOptions
-	): Promise<ManyItems<T>>;
+	createOne(item: PartialItem<T>, query?: QueryOne<T>, options?: ItemsOptions): Promise<OneItem<T>>;
+	createMany(items: PartialItem<T>[], query?: QueryMany<T>, options?: ItemsOptions): Promise<ManyItems<T>>;
 
-	readOne(
-		id: ID,
-		query?: QueryOne<T>,
-		options?: ItemsOptions
-	): Promise<OneItem<T>>;
-	readMany(
-		ids: ID[],
-		query?: QueryMany<T>,
-		options?: ItemsOptions
-	): Promise<ManyItems<T>>;
-	readByQuery(
-		query?: QueryMany<T>,
-		options?: ItemsOptions
-	): Promise<ManyItems<T>>;
+	readOne(id: ID, query?: QueryOne<T>, options?: ItemsOptions): Promise<OneItem<T>>;
+	readMany(ids: ID[], query?: QueryMany<T>, options?: ItemsOptions): Promise<ManyItems<T>>;
+	readByQuery(query?: QueryMany<T>, options?: ItemsOptions): Promise<ManyItems<T>>;
 
-	updateOne(
-		id: ID,
-		item: PartialItem<T>,
-		query?: QueryOne<T>,
-		options?: ItemsOptions
-	): Promise<OneItem<T>>;
-	updateMany(
-		ids: ID[],
-		item: PartialItem<T>,
-		query?: QueryMany<T>,
-		options?: ItemsOptions
-	): Promise<ManyItems<T>>;
+	updateOne(id: ID, item: PartialItem<T>, query?: QueryOne<T>, options?: ItemsOptions): Promise<OneItem<T>>;
+	updateMany(ids: ID[], item: PartialItem<T>, query?: QueryMany<T>, options?: ItemsOptions): Promise<ManyItems<T>>;
 
 	deleteOne(id: ID, options?: ItemsOptions): Promise<void>;
 	deleteMany(ids: ID[], options?: ItemsOptions): Promise<void>;
@@ -172,6 +136,6 @@ export interface IItems<T extends Item> {
 
 export class EmptyParamError extends Error {
 	constructor(paramName?: string) {
-		super(`${paramName ?? "ID"} cannot be an empty string`);
+		super(`${paramName ?? 'ID'} cannot be an empty string`);
 	}
 }
