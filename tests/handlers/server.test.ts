@@ -23,4 +23,19 @@ describe('server', function () {
 
 		expect(scope.pendingMocks().length).toBe(0);
 	});
+
+	test(`get open api spec`, async (url, nock) => {
+		nock().get('/server/specs/oas').reply(
+			200,
+			{
+				openapi: '3.0.0',
+			},
+			{ 'Content-Type': 'application/json' }
+		);
+
+		const sdk = new Directus(url);
+		const oas = await sdk.server.oas();
+
+		expect(oas.openapi).toBe('3.0.0');
+	});
 });

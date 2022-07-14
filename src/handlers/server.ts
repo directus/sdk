@@ -43,4 +43,8 @@ export class ServerHandler {
 	async info(): Promise<ServerInfo> {
 		return (await this.transport.get<ServerInfo>('/server/info')).data!;
 	}
+
+	async oas(): Promise<any> {
+		return (await this.transport.get<any>('/server/specs/oas')).raw;
+	}
 }
