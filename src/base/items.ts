@@ -23,22 +23,22 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 		this.endpoint = collection.startsWith('directus_') ? `/${collection.substring(9)}` : `/items/${collection}`;
 	}
 
-	async readOne(id: ID, query?: QueryOne<T>, options?: ItemsOptions): Promise<OneItem<T>> {
+	async readOne<Q extends QueryOne<T>>(id: ID, query?: Q, options?: ItemsOptions): Promise<OneItem<T, Q>> {
 		if (`${id}` === '') throw new EmptyParamError('id');
-		const response = await this.transport.get<T>(`${this.endpoint}/${encodeURI(id as string)}`, {
+		const response = await this.transport.get<OneItem<T, Q>>(`${this.endpoint}/${encodeURI(id as string)}`, {
 			params: query,
 			...options?.requestOptions,
 		});
 
-		return response.data as T;
+		return response.data!;
 	}
 
-	async readMany(ids: ID[], query?: QueryMany<T>, options?: ItemsOptions): Promise<ManyItems<T>> {
+	async readMany<Q extends QueryMany<T>>(ids: ID[], query?: Q, options?: ItemsOptions): Promise<ManyItems<T, Q>> {
 		const collectionFields = await this.transport.get<FieldType[]>(`/fields/${this.collection}`);
 
 		const primaryKeyField = collectionFields.data?.find((field: any) => field.schema.is_primary_key === true);
 
-		const { data, meta } = await this.transport.get<T[]>(`${this.endpoint}`, {
+		const { data, meta } = await this.transport.get<OneItem<T, Q>[]>(`${this.endpoint}`, {
 			params: {
 				filter: {
 					[primaryKeyField!.field]: { _in: ids },
@@ -56,8 +56,8 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 		};
 	}
 
-	async readByQuery(query?: QueryMany<T>, options?: ItemsOptions): Promise<ManyItems<T>> {
-		const { data, meta } = await this.transport.get<T[]>(`${this.endpoint}`, {
+	async readByQuery<Q extends QueryMany<T>>(query?: Q, options?: ItemsOptions): Promise<ManyItems<T, Q>> {
+		const { data, meta } = await this.transport.get<OneItem<T, Q>[]>(`${this.endpoint}`, {
 			params: query,
 			...options?.requestOptions,
 		});
@@ -68,39 +68,52 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 		};
 	}
 
-	async createOne(item: PartialItem<T>, query?: QueryOne<T>, options?: ItemsOptions): Promise<OneItem<T>> {
+	async createOne<Q extends QueryOne<T>>(
+		item: PartialItem<T>,
+		query?: Q,
+		options?: ItemsOptions
+	): Promise<OneItem<T, Q>> {
 		return (
-			await this.transport.post<T>(`${this.endpoint}`, item, {
+			await this.transport.post<OneItem<T, Q>>(`${this.endpoint}`, item, {
 				params: query,
 				...options?.requestOptions,
 			})
 		).data;
 	}
 
-	async createMany(items: PartialItem<T>[], query?: QueryMany<T>, options?: ItemsOptions): Promise<ManyItems<T>> {
-		return await this.transport.post<PartialItem<T>[]>(`${this.endpoint}`, items, {
+	async createMany<Q extends QueryMany<T>>(
+		items: PartialItem<T>[],
+		query?: Q,
+		options?: ItemsOptions
+	): Promise<ManyItems<T, Q>> {
+		return await this.transport.post<OneItem<T, Q>[]>(`${this.endpoint}`, items, {
 			params: query,
 			...options?.requestOptions,
 		});
 	}
 
-	async updateOne(id: ID, item: PartialItem<T>, query?: QueryOne<T>, options?: ItemsOptions): Promise<OneItem<T>> {
+	async updateOne<Q extends QueryOne<T>>(
+		id: ID,
+		item: PartialItem<T>,
+		query?: Q,
+		options?: ItemsOptions
+	): Promise<OneItem<T, Q>> {
 		if (`${id}` === '') throw new EmptyParamError('id');
 		return (
-			await this.transport.patch<PartialItem<T>>(`${this.endpoint}/${encodeURI(id as string)}`, item, {
+			await this.transport.patch<OneItem<T, Q>>(`${this.endpoint}/${encodeURI(id as string)}`, item, {
 				params: query,
 				...options?.requestOptions,
 			})
 		).data;
 	}
 
-	async updateMany(
+	async updateMany<Q extends QueryMany<T>>(
 		ids: ID[],
 		data: PartialItem<T>,
-		query?: QueryMany<T>,
+		query?: Q,
 		options?: ItemsOptions
-	): Promise<ManyItems<T>> {
-		return await this.transport.patch<PartialItem<T>[]>(
+	): Promise<ManyItems<T, Q>> {
+		return await this.transport.patch<OneItem<T, Q>[]>(
 			`${this.endpoint}`,
 			{
 				keys: ids,
@@ -113,13 +126,13 @@ export class ItemsHandler<T extends Item> implements IItems<T> {
 		);
 	}
 
-	async updateByQuery(
+	async updateByQuery<Q extends QueryMany<T>>(
 		updateQuery: QueryMany<T>,
 		data: PartialItem<T>,
-		query?: QueryMany<T>,
+		query?: Q,
 		options?: ItemsOptions
-	): Promise<ManyItems<T>> {
-		return await this.transport.patch<PartialItem<T>[]>(
+	): Promise<ManyItems<T, Q>> {
+		return await this.transport.patch<OneItem<T, Q>[]>(
 			`${this.endpoint}`,
 			{
 				query: updateQuery,

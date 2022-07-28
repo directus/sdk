@@ -207,6 +207,6 @@ export class Directus<T extends TypeMap> implements IDirectus<T> {
 	}
 
 	items<C extends string, I = TypeOf<T, C>>(collection: C): IItems<I> {
-		return this._items[collection] || (this._items[collection] = new ItemsHandler<T>(collection, this.transport));
+		return this._items[collection] || (this._items[collection] = new ItemsHandler<I>(collection, this.transport));
 	}
 }
