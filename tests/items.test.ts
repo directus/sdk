@@ -137,11 +137,11 @@ describe('items', function () {
 
 		expect(items.data?.[0]?.id).toBe(1);
 		expect(items.data?.[0]?.title).toBe(`My first post`);
-		expect(items.data?.[0]?.body).toBeUndefined();
+		expect((<any>items.data?.[0])?.body).toBeUndefined();
 
 		expect(items.data?.[1]?.id).toBe(2);
 		expect(items.data?.[1]?.title).toBe(`My second post`);
-		expect(items.data?.[1]?.body).toBeUndefined();
+		expect((<any>items.data?.[1])?.body).toBeUndefined();
 	});
 
 	test(`create one item`, async (url, nock) => {
