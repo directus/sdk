@@ -5,6 +5,7 @@ export type Post = {
 	title: string;
 	body: string;
 	published: boolean;
+	author: ID | Author;
 };
 
 export type Category = {
@@ -12,7 +13,14 @@ export type Category = {
 	name: string;
 };
 
+export type Author = {
+	id: ID;
+	name: string;
+	posts: (ID | Post)[];
+};
+
 export type Blog = {
 	posts: Post;
 	categories: Category;
+	author: Author;
 };
